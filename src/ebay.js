@@ -34,7 +34,7 @@ function ebayHeaders(callName, cfg) {
 async function ebayProxy(callName, xml, cfg) {
   const headers = ebayHeaders(callName, cfg);
   const endpoint = getEndpoint(cfg.sandbox);
-  const res = await fetch('https://fitment-manager-production.up.railway.app', {
+  const res = await fetch('https://ayqtdxwfadmpryzhnuux.supabase.co/functions/v1/rapid-worker', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ endpoint, xml, headers })
