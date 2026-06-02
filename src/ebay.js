@@ -34,9 +34,12 @@ function ebayHeaders(callName, cfg) {
 async function ebayProxy(callName, xml, cfg) {
   const headers = ebayHeaders(callName, cfg);
   const endpoint = getEndpoint(cfg.sandbox);
-  const res = await fetch('https://ayqtdxwfadmpryzhnuux.supabase.co/functions/v1/rapid-worker', {
+  const res = await fetch('https://ayqtdxwfadmpryzhnuux.supabase.co/functions/v1/ebay-proxy', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer sb_publishable_uAjIOKPWSD_VCXIPGZTo6Q_bf6fF84m'
+    },
     body: JSON.stringify({ endpoint, xml, headers })
   });
   if (!res.ok) throw new Error('Proxy error ' + res.status);
