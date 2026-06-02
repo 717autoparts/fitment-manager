@@ -1,3 +1,7 @@
+import https from 'https';
+
+const agent = new https.Agent({ rejectUnauthorized: false });
+
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -21,7 +25,8 @@ export default async function handler(req, res) {
         'X-EBAY-API-CERT-NAME': headers['X-EBAY-API-CERT-NAME'],
         'X-EBAY-API-SITEID': headers['X-EBAY-API-SITEID']
       },
-      body: xml
+      body: xml,
+      agent
     });
 
     const text = await response.text();
