@@ -31,8 +31,19 @@ function ebayHeaders(callName, cfg) {
   };
 }
 
-export async function getItem(itemId, cfg) {
+async function ebayProxy(callName, xml, cfg) {
+  const headers = ebayHeaders(callName, cfg);
   const endpoint = getEndpoint(cfg.sandbox);
+  const res = await fetch('/api/ebay', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ endpoint, xml, headers })
+  });
+  if (!res.ok) throw new Error('Proxy error ' + res.status);
+  return res.text();
+}
+
+export async function getItem(itemId, cfg) {
   const xml = `<?xml version="1.0" encoding="utf-8"?>
 <GetItemRequest xmlns="urn:ebay:apis:eBLBaseComponents">
   <RequesterCredentials><eBayAuthToken>${cfg.token}</eBayAuthToken></RequesterCredentials>
@@ -40,9 +51,7 @@ export async function getItem(itemId, cfg) {
   <IncludeItemCompatibilityList>true</IncludeItemCompatibilityList>
   <DetailLevel>ReturnAll</DetailLevel>
 </GetItemRequest>`;
-  const res = await fetch(endpoint, { method: 'POST', headers: ebayHeaders('GetItem', cfg), body: xml });
-  if (!res.ok) throw new Error('eBay API error ' + res.status);
-  return parseGetItem(await res.text());
+  return parseGetItem(await ebayProxy('GetItem', xml, cfg));
 }
 
 function parseGetItem(xml) {
@@ -63,7 +72,6 @@ function parseGetItem(xml) {
 }
 
 export async function reviseItem(itemId, compatibilities, cfg) {
-  const endpoint = getEndpoint(cfg.sandbox);
   const compatXml = compatibilities.map(c =>
     '<Compatibility>' +
     Object.entries(c).map(([k, v]) => `<NameValueList><Name>${k}</Name><Value>${v}</Value></NameValueList>`).join('') +
@@ -80,23 +88,18 @@ export async function reviseItem(itemId, compatibilities, cfg) {
     </ItemCompatibilityList>
   </Item>
 </ReviseFixedPriceItemRequest>`;
-  const res = await fetch(endpoint, { method: 'POST', headers: ebayHeaders('ReviseFixedPriceItem', cfg), body: xml });
-  if (!res.ok) throw new Error('eBay API error ' + res.status);
-  const text = await res.text();
+  const text = await ebayProxy('ReviseFixedPriceItem', xml, cfg);
   const doc = new DOMParser().parseFromString(text, 'text/xml');
   const ack = doc.querySelector('Ack')?.textContent;
   return ack === 'Success' || ack === 'Warning';
 }
 
 export async function testEbayConnection(cfg) {
-  const endpoint = getEndpoint(cfg.sandbox);
   const xml = `<?xml version="1.0" encoding="utf-8"?>
 <GeteBayOfficialTimeRequest xmlns="urn:ebay:apis:eBLBaseComponents">
   <RequesterCredentials><eBayAuthToken>${cfg.token}</eBayAuthToken></RequesterCredentials>
 </GeteBayOfficialTimeRequest>`;
-  const res = await fetch(endpoint, { method: 'POST', headers: ebayHeaders('GeteBayOfficialTime', cfg), body: xml });
-  if (!res.ok) throw new Error('eBay API error ' + res.status);
-  const text = await res.text();
+  const text = await ebayProxy('GeteBayOfficialTime', xml, cfg);
   const doc = new DOMParser().parseFromString(text, 'text/xml');
   return doc.querySelector('Ack')?.textContent === 'Success';
 }
