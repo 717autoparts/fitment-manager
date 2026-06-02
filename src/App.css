@@ -1,0 +1,46 @@
+.app-shell { min-height: 100vh; display: flex; flex-direction: column; }
+
+.app-header { background: var(--bg); border-bottom: 1px solid var(--border); padding: 0 1.5rem; height: 56px; display: flex; align-items: center; }
+.app-header-inner { max-width: 760px; width: 100%; margin: 0 auto; }
+.app-title { font-size: 16px; font-weight: 500; display: flex; align-items: center; gap: 10px; }
+.app-title i { font-size: 18px; }
+
+.db-pill { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 400; padding: 3px 10px; border-radius: 20px; border: 1px solid var(--border); color: var(--text2); }
+.db-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--text3); }
+.db-pill.connected .db-dot { background: #1D9E75; }
+.db-pill.error .db-dot { background: #E24B4A; }
+
+.app-main { max-width: 760px; width: 100%; margin: 0 auto; padding: 1.5rem; flex: 1; }
+
+.tabs { display: flex; gap: 4px; margin-bottom: 1.5rem; background: var(--bg2); padding: 3px; border-radius: var(--radius); border: 1px solid var(--border); }
+.tab { flex: 1; padding: 8px 12px; font-size: 13px; font-weight: 500; border-radius: 6px; border: none; background: transparent; color: var(--text2); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.15s; }
+.tab i { font-size: 14px; }
+.tab.active { background: var(--bg); color: var(--text); box-shadow: 0 0 0 1px var(--border); }
+.tab:hover:not(.active) { color: var(--text); }
+
+.card { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.25rem; margin-bottom: 1rem; }
+.card-title { font-size: 11px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 1rem; display: flex; align-items: center; gap: 6px; }
+
+.field { display: flex; flex-direction: column; gap: 5px; margin-bottom: 10px; }
+.field label { font-size: 13px; color: var(--text2); display: flex; align-items: center; gap: 6px; }
+.field input { width: 100%; font-size: 14px; padding: 8px 12px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg2); color: var(--text); }
+.field input:focus { outline: none; border-color: #378ADD; }
+.field input::placeholder { color: var(--text3); }
+
+.badge { font-size: 11px; padding: 2px 8px; border-radius: 20px; font-weight: 500; }
+.badge-yours { background: var(--blue-light); color: var(--blue-dark); }
+.badge-donor { background: var(--teal-light); color: var(--teal-dark); }
+.badge-cat { background: var(--bg2); color: var(--text2); border: 1px solid var(--border); }
+
+.divider { display: flex; align-items: center; gap: 8px; padding: 4px 0; margin-bottom: 10px; }
+.divider span { font-size: 12px; color: var(--text3); }
+.divider-line { flex: 1; height: 1px; background: var(--border); }
+
+.btn-row { display: flex; gap: 8px; margin-top: 1rem; flex-wrap: wrap; }
+.btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: var(--radius); font-size: 13px; font-weight: 500; cursor: pointer; border: 1px solid var(--border); background: var(--bg); color: var(--text); transition: background 0.15s; }
+.btn:hover { background: var(--bg2); }
+.btn:active { transform: scale(0.98); }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+.btn-primary { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
+.btn-primary:hover { opacity: 0.85; background: #1a1a1a; }
+.btn-success { background: var(--teal); color: var(--teal-light); borde
