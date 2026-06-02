@@ -7,18 +7,27 @@ export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end();
 
   try {
-    const { endpoint, xml, headers } = req.body;
-
-    if (!xml || !endpoint) {
-      return res.status(400).json({ error: 'Missing xml or endpoint' });
+    const body = req.body;
+    
+    if (!body || !body.xml) {
+      return res.status(400).json({ 
+        error: 'Missing body', 
+        received: JSON.stringify(body).substring(0, 200) 
+      });
     }
+
+    const { endpoint, xml, headers } = body;
 
     const response = await fetch(endpoint, {
       method: 'POST',
       headers: {
-        ...headers,
         'Content-Type': 'text/xml',
-        'Content-Length': Buffer.byteLength(xml, 'utf8').toString()
+        'X-EBAY-API-COMPATIBILITY-LEVEL': headers['X-EBAY-API-COMPATIBILITY-LEVEL'],
+        'X-EBAY-API-CALL-NAME': headers['X-EBAY-API-CALL-NAME'],
+        'X-EBAY-API-APP-NAME': headers['X-EBAY-API-APP-NAME'],
+        'X-EBAY-API-DEV-NAME': headers['X-EBAY-API-DEV-NAME'],
+        'X-EBAY-API-CERT-NAME': headers['X-EBAY-API-CERT-NAME'],
+        'X-EBAY-API-SITEID': headers['X-EBAY-API-SITEID']
       },
       body: xml
     });
@@ -27,6 +36,6 @@ export default async function handler(req, res) {
     res.setHeader('Content-Type', 'text/xml');
     res.status(200).send(text);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: err.message, stack: err.stack });
   }
 }
