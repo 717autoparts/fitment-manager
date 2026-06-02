@@ -1,38 +1,36 @@
-import https from 'https';
-
-const agent = new https.Agent({ rejectUnauthorized: false });
+import { request } from 'https';
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).end();
 
-  try {
-    const { endpoint, xml, headers } = req.body;
+  const { endpoint, xml, headers } = req.body;
+  const url = new URL(endpoint);
 
-    const response = await fetch(endpoint, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'text/xml;charset=utf-8',
-        'User-Agent': 'Mozilla/5.0',
-        'X-EBAY-API-COMPATIBILITY-LEVEL': headers['X-EBAY-API-COMPATIBILITY-LEVEL'],
-        'X-EBAY-API-CALL-NAME': headers['X-EBAY-API-CALL-NAME'],
-        'X-EBAY-API-APP-NAME': headers['X-EBAY-API-APP-NAME'],
-        'X-EBAY-API-DEV-NAME': headers['X-EBAY-API-DEV-NAME'],
-        'X-EBAY-API-CERT-NAME': headers['X-EBAY-API-CERT-NAME'],
-        'X-EBAY-API-SITEID': headers['X-EBAY-API-SITEID']
-      },
-      body: xml,
-      agent
+  const options = {
+    hostname: url.hostname,
+    path: url.pathname,
+    method: 'POST',
+    rejectUnauthorized: false,
+    headers: {
+      'Content-Type': 'text/xml;charset=utf-8',
+      'Content-Length': Buffer.byteLength(xml),
+      'User-Agent': 'Mozilla/5.0',
+      ...headers
+    }
+  };
+
+  const proxyReq = request(options, (proxyRes) => {
+    let data = '';
+    proxyRes.on('data', chunk => data += chunk);
+    proxyRes.on('end', () => {
+      res.setHeader('Content-Type', 'text/xml');
+      res.status(200).send(data);
     });
+  });
 
-    const text = await response.text();
-    res.setHeader('Content-Type', 'text/xml');
-    res.status(200).send(text);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+  proxyReq.on('error', err => res.status(500).json({ error: err.message }));
+  proxyReq.write(xml);
+  proxyReq.end();
 }
