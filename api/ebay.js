@@ -8,12 +8,23 @@ export default async function handler(req, res) {
 
   try {
     const { endpoint, xml, headers } = req.body;
+
+    if (!xml || !endpoint) {
+      return res.status(400).json({ error: 'Missing xml or endpoint' });
+    }
+
     const response = await fetch(endpoint, {
       method: 'POST',
-      headers: headers,
+      headers: {
+        ...headers,
+        'Content-Type': 'text/xml',
+        'Content-Length': Buffer.byteLength(xml, 'utf8').toString()
+      },
       body: xml
     });
+
     const text = await response.text();
+    res.setHeader('Content-Type', 'text/xml');
     res.status(200).send(text);
   } catch (err) {
     res.status(500).json({ error: err.message });
