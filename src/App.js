@@ -4,6 +4,7 @@ import LibraryTab from './tabs/LibraryTab';
 import ConfigTab from './tabs/ConfigTab';
 import { sb } from './supabase';
 import './App.css';
+import BulkTab from './tabs/BulkTab';
 
 export default function App() {
   const [tab, setTab] = useState('apply');
@@ -36,6 +37,7 @@ export default function App() {
             { id: 'apply', icon: 'ti-copy', label: 'Apply fitment' },
             { id: 'library', icon: 'ti-database', label: 'Library' },
             { id: 'config', icon: 'ti-settings', label: 'Config' },
+            { id: 'bulk', icon: 'ti-upload', label: 'Bulk upload' },
           ].map(t => (
             <button
               key={t.id}
@@ -51,6 +53,7 @@ export default function App() {
         {tab === 'apply' && <ApplyTab />}
         {tab === 'library' && <LibraryTab />}
         {tab === 'config' && <ConfigTab />}
+        {tab === 'bulk' && <BulkTab />}
       </main>
     </div>
   );
